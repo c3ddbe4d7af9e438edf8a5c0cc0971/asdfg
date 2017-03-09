@@ -7,7 +7,7 @@ $route->post('/signup','account@signup');
 
 $route->post('/login','account@login');
 
-$route->post('/pesonalsetting','Detail@update_details');
+$route->post('/user/edit','Detail@update_details');
 
 $route->post('/password/change','Detail@change_password');
 

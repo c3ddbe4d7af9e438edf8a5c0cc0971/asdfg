@@ -7,41 +7,43 @@ class Detail{
 		}
 	}
 	public function update_details(){
-		$details=Input::post(array('name','dob','mobile_number','country','gender','kroo_pic','profile_setting'));
+		$details=Input::post(array('name','dob','mobile','gender','pic'));
 		if(!$valdate=Validator::array_empty($details)){
 			return Json::make('0',Validator::error())->withError(400)->response();
 		}
-		//var_dump($details['dob']);
-		if($details['dob']){
+		if(!empty($details['dob'])){
 		$details['dob']=date('Y-m-d',strtotime($details['dob']));	
 		}
-		//var_dump($details);
 		$rules=array(
-			'mobile_number'=>'mobile',
+			'mobile'=>'mobile',
 			);
 		if(!$valdate=Validator::validate($details,$rules)){
 			return Json::make('0',Validator::error())->withError(400)->response();
 		}
-		if(!empty($_FILES['kroo_pic'])){
+		if(!empty($_FILES['pic'])){
 			$base=$_SERVER['DOCUMENT_ROOT'].'/images';
-			$ext=strrchr($_FILES['kroo_pic']['name'],".");
+			$ext=strrchr($_FILES['pic']['name'],".");
 			$image_name=md5(uniqid().microtime()).$ext;
 			$image_dest=$base."/".$image_name;
-			$image_type=strtolower($_FILES['kroo_pic']['type']);
-			$image_size=$_FILES['kroo_pic']['size'];
+			$image_type=strtolower($_FILES['pic']['type']);
+			$image_size=$_FILES['pic']['size'];
 			$allow_type=array('image/gif','image/png','image/jpg','image/jpeg');
 			if(in_array($image_type, $allow_type) and $image_size<30000000){
-				if(!move_uploaded_file($_FILES['kroo_pic']['tmp_name'],$image_dest)){
+				if(!move_uploaded_file($_FILES['pic']['tmp_name'],$image_dest)){
 					return Json::make('0','image not uploaded',array())->Witherror(304)->response();
 				}
-				$details['kroo_pic']=$image_name;
+				$details['pic']=$image_name;
 			}
 		}
 		$var=Details::update_details($details);
-		$details['id']=Users::auth()->id;
-		$var1=Details::u_details($details);	
-		if(false!==$var and false!==$var1){
-			return Json::make('1','details updated',$var1[0])->response();
+		$user=Users::auth();
+		if($user->type=='1'){
+			$data=Details::stu_details($user->id);
+		}else if($user->type=='2'){
+			$data=Details::tea_details($user->id);
+		}
+		if(false!==$var and false!==$data){
+			return Json::make('1','details updated',$data[0])->response();
 		}
 		return Json::make('0','server error',array())->Witherror(503)->response();
 	}
