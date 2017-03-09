@@ -1,42 +1,12 @@
 <?php
-date_default_timezone_set('Asia/Kolkata');
-$server_ip=$_SERVER['SERVER_ADDR'];
-switch ($server_ip) {
-	case '172.31.23.161':
-		define('env', 'prod');
-		break;
-	case '127.0.0.1':
-		define('env', 'local');
-		break;
-	default:
-		define('env', 'local');
-		break;
-}
-
-$config=[
-	'prod'=>[
-		'DB_NAME'	       =>'db',
-		'DB_USER'	       =>'root',
-		'DB_PASSWORD'	   =>'',
-		'DB_HOST'	       =>'yahavi.cn26zz0crrtl.ap-south-1.rds.amazonaws.com',
-		'DRIVER'	       =>'mysql',
-		'API_URL'	       =>'https://api.knowlarity.com',
-	],
-	'local'=>[
-		'DB_NAME'	       =>'db',
-		'DB_USER'	       =>'root',
-		'DB_PASSWORD'	   =>'',
-		'DB_HOST'	       =>'127.0.0.1',
-		'DRIVER'	       =>'mysql',
-		
-		'API_URL'	       =>'https://api.local.knowlarity.com'
-	],
-];
-
-if (!defined('env')) {
-	define('env', 'prod');
-}
-foreach ($config[env] as $key => $value) {
-	define($key, $value);
-}
+define('DB_NAME', 'examdelhi');
+define('DB_USER', 'root');
+define('DB_PASSWORD', '');
+define('DB_HOST', '127.0.0.1');
+define('DRIVER','mysql');
+define('AUTH_TABLE', 'auth');
+define('HASH_ALGO','sha256');
+define('ACCESS_TOKEN_EXPIRY',50);
+date_default_timezone_set("Asia/Kolkata"); 
+define('PASSWORD_EXPIRY',24);
 ?>

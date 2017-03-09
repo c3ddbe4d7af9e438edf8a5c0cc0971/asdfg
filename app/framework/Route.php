@@ -21,8 +21,8 @@ class Route
 
 	private function pattern($route) {
 		$route=$this->parse_uri($route);
-		$args=preg_match_all('/(?<=\/:)([aA-zZ0-9-]+)(?=\/|$)/', $route, $matches);
-		return array('pattern' => '/^'.str_replace(array(':','/'), array('','\/'), preg_replace('/(?<=\/:)([aA-zZ0-9-]+)(?=\/|$)/', '([aA-zZ0-9-]+)', $route)).'$/',
+		$args=preg_match_all('/(?<=\/:)([aA-zZ0-9]+)(?=\/|$)/', $route, $matches);
+		return array('pattern' => '/^'.str_replace(array(':','/'), array('','\/'), preg_replace('/(?<=\/:)([aA-zZ0-9]+)(?=\/|$)/', '([aA-zZ0-9]+)', $route)).'$/',
 			'args'=>sizeof($matches[0])?$matches[0]:false);
 	}
 
@@ -31,7 +31,7 @@ class Route
 		$params=explode('@', $param);
 		$pattern=$this->pattern($uri);
 		$this->pattern[$pattern['pattern']][$verbs]['controller']=ucfirst(strtolower($params[0]));
-		$this->pattern[$pattern['pattern']][$verbs]['method']=$params[1];
+		$this->pattern[$pattern['pattern']][$verbs]['method']=strtolower($params[1]);
 		$this->pattern[$pattern['pattern']][$verbs]['args']=$pattern['args'];
 	}
 
@@ -58,12 +58,8 @@ class Route
 		$this->addroute($uri, $params);	
 		$this->addroute($uri, $params,'POST');
 	}
-	public function put($uri, $params){
-		$this->addroute($uri, $params,'PUT');
-	}
-	public function delete($uri, $params){
-		$this->addroute($uri, $params,'DELETE');
-	}
+
+	
 
 	function run(){
 		$request_uri=$this->parse_uri($_SERVER['REQUEST_URI']);
@@ -82,8 +78,28 @@ class Route
 				throw new Exception("The controller not found", 1);				
 			}
 		}else{
-			return Json::make('0','URI not Found')->withError(302)->response();
+			require_once '../app/controller/Error.php';
+			call_user_func_array(array(new Error,'home'),array());
 		}
 		
 	}
+
+
+
+
+
+
+
+	
+
 }
+
+
+
+
+
+
+
+
+
+

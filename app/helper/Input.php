@@ -41,25 +41,7 @@ class Input
 		}
 		return isset($_POST[$key]) ?self::clean($_POST[$key]):'';
 	}
-	public static function put($key=null){
-		parse_str(file_get_contents("php://input"),$_PUT);
-		if(is_array($key)){
-			$put=array();
-			foreach ($key as $key) {
-				$put[$key]=self::clean(self::put($key));
-			}
-			return $put;
-		}else{
-			if(!isset($key)){
-				$put=array();
-				foreach ($_PUT as $key => $value) {
-					$put[$key]=self::clean($value);
-				}
-				return $put;
-			}
-		}
-		return isset($_PUT[$key]) ?self::clean($_PUT[$key]):'';
-	}
+
 	public static function any($key=null){
 		if(is_array($key)){
 			$any=array();
@@ -80,18 +62,7 @@ class Input
 	}
 
 	private static function clean($var=''){
-		if (isset($var)) {
-			if (is_array($var)) {
-				foreach ($var as $key => $value) {
-					$var[$key]=trim($value);
-				}
-			}else{
-				$var=trim($var);		
-			}
-		}else{
-			$var='';
-		}
-		return $var;
+		return htmlspecialchars((trim($var)));
 	}
 }
 ?>

@@ -1,16 +1,24 @@
 <?php
-ini_set('display_errors', 1);
 require_once '../app/init.php';
+
 $route=new Route;
 
-$route->post('/account/register','account@register');
-$route->post('/account/login','account@login');
-$route->post('/account/logout','account@logout');
-$route->post('/account/forgetPassword','account@forgetPassword');
-$route->post('/account/resetPassword','account@resetPassword');
-$route->post('/account/changePassword','account@changePassword');
+$route->post('/signup','account@signup');
 
-$route->any('/test','test@index');
+$route->post('/login','account@login');
 
+$route->post('/pesonalsetting','Detail@update_details');
+
+$route->post('/password/change','Detail@change_password');
+
+$route->post('/password/forget','account@send_temp_password');
+
+$route->post('/password/reset','account@set_new_password');
+
+$route->get('/details','Detail@user_details');
+$route->get('/student','Detail@getUser');
+
+$route->get('/test','Test@home');
 $route->run();
+
 ?>

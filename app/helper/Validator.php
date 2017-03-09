@@ -1,11 +1,8 @@
 <?php
-/**
-* 
-*/
 class Validator
 {
 	protected static $error=array();
-	protected static $unique=null;
+	protected static $unique=array();
 	public static function validate(Array $input, Array $rules){
 		self::$error=false;
 		foreach ($rules as $key => $value) {
@@ -25,6 +22,16 @@ class Validator
 		}
 		return !self::$error;
 	}
+    public static function array_empty(Array $input){
+    	self::$error=false;
+    	foreach ($input as $key => $value) {
+    		if(!strlen($value)==0){
+    			return true;
+    		}
+    	}
+    	self::setError("Input","Input can not be empty");
+    	return false;
+    }
 	public static function error(){
 		return self::$error;
 	}
@@ -32,7 +39,7 @@ class Validator
 		return self::$unique;
 	}
 	private static function required($value,$key){
-		if (!isset($value) || $value=='') {
+		if ((empty($value) and $value!=0) || !isset($value) || $value=='') {
 			self::setError($key, $key.' is required');
 			return false;
 		}
@@ -80,7 +87,7 @@ class Validator
 		if (!$sth->rowCount()) {
 			return true;
 		}
-		self::$unique=$key=='email'?100:101;
+		self::$unique[]=$key=='email'?100:101;
 		self::setError($key, $key.' should be unique',$key);
 		return false;
 	}
@@ -91,6 +98,22 @@ class Validator
     	self::setError($key, $key.' Must be in YYYY-MM-DD format');
 		return false;	
 	}
+	private static function date_time($value,$key){
+		if (preg_match("/^(\d{4})-(\d{2})-(\d{2}) ([01][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])$/",$value)){
+        	return true;
+    	}
+    	self::setError($key, $key.' Must be in YYYY-MM-DD H:i:s format');
+		return false;	
+	}
+		private static function time($value,$key){
+		if (preg_match("/^([01]?[0-9]|2[0-3]):[0-5][0-9](:[0-5][0-9])$/",$value)){
+        	return true;
+    	}
+    	self::setError($key, $key.' Must be in  HH:ii:ss format');
+		return false;	
+	}
+
+
 	private static function mind($value,$param,$key){
 		if (strtotime($value)>=strtotime($param)){
         	return true;
@@ -122,15 +145,26 @@ class Validator
 		if(preg_match('/^\d{10}$/', $value)){
 			return true;
 		}
-		self::setError($key,$key.' Should be a valid mobile number');
+		self::setError($key,'Mobile number Should be a valid mobile number');
 		return false;
 	}
-	public static function numeric($value,$key){
-		if (is_numeric($value)){
-        	return true;
-    	}
-    	self::setError($key, $key.' Must be numeric');
-		return false;	
+	private static function bool($value,$key){
+		if($value==0 or $value==1){
+			return true;
+		}
+		self::setError($key,$key." should be boolean type");
+		return false;
 	}
+
+	private static function mobile_email($value,$key){
+		$mobile=preg_match('/^\d{10}$/',$value);
+		$email=filter_var($value, FILTER_VALIDATE_EMAIL);
+		if($mobile or $email){
+			return true;
+		}
+		self::setError($key,$key." should be valid mobile number or email");
+		return false;
+	}
+
 }
 ?>

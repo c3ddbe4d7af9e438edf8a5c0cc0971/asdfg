@@ -19,18 +19,14 @@ class Model
 			return $sth->fetchAll();
 		}
 		$this->error=$sth->errorInfo();
-		//var_dump($this->error);
 		return false;
 	}
 
-	public function insert(Array $details,$table=null){
-		if (!$table) {
-			$table=$this->table;
-		}
+	public function insert(Array $details){
 		$keys=array_keys($details);
 		$column='('.implode(',', $keys).')';
 		$values='(:'.implode(',:',$keys).')';
-		$sql='INSERT INTO '.$table.' '. $column.' VALUES '.$values;
+		$sql='INSERT INTO '.$this->table.' '. $column.' VALUES '.$values;
 		$sth=$this->db->prepare($sql);
 		if($sth->execute($details)){
 			$this->error=false;
@@ -38,7 +34,7 @@ class Model
 			return $this->db->lastInsertId();
 		}
 		$this->error=$sth->errorInfo();
-		//var_dump($this->error);
+		var_dump($this->error);
 		return false;
 	}
 
@@ -50,7 +46,6 @@ class Model
 			return true;
 		}
 		$this->error=$sth->errorInfo();
-		//var_dump($this->error);
 		return false;	
 	}
 
@@ -59,10 +54,9 @@ class Model
 		if($sth->execute($params)){
 			$this->error=false;
 			$this->count=$sth->rowCount();
-			return $this->count;
+			return true;
 		}
 		$this->error=$sth->errorInfo();
-		//var_dump($this->error);
 		return false;
 	}
 
@@ -71,10 +65,22 @@ class Model
 		if($sth->execute($params)){
 			$this->error=false;
 			$this->count=$sth->rowCount();
-			return $sth;
+			return $this->count;
 		}
 		$this->error=$sth->errorInfo();
-		//var_dump($this->error);
+		return false;		
+	}
+
+
+	public function sql_insert($sql, $params=[]){
+		$sth=$this->db->prepare($sql);
+		if($sth->execute($params)){
+			$this->error=false;
+			$this->count=$sth->rowCount();
+			return $this->db->lastInsertId();
+		}
+		$this->error=$sth->errorInfo();
+		var_dump($this->error);
 		return false;		
 	}
 	public function first($sql, $params=[]){
@@ -86,17 +92,5 @@ class Model
 		}
 		$this->error=$sth->errorInfo();
 		return false;		
-	}
-	public function start_trans(){
-		$this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-		$this->db->beginTransaction(); 
-	}
-	public function commit(){
-		$this->db->commit();
-		$this->db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
-	}
-	public function rollback(){
-		$this->db->rollback();
-		$this->db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
 	}
 }

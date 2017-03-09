@@ -47,15 +47,17 @@ class Json
 				'505'=>'HTTP Version Not Supported',	
 				'511'=>'Network Authentication Required'
 		);
-	protected static $error=0;
+	protected static $error=array(
+				0
+		);
 	private function __construct($data) {
 		$this->data=$data;
 	}
 	function response($status='200'){
-		header('HTTP/1.1 '.$status.' '.self::$status[$status]);
+		header('HTTP/1.0 '.$status.' '.self::$status[$status]);
 		header('Content-Type: Application/Json; Charset=UTF-8');
-		header('X-Powered-By: Mayank Kumar');
-		//$this->data['count']=sizeof($this->data['data']);
+		header("Access-Control-Allow-Origin: *");
+		$this->data['count']=sizeof($this->data['data']);
 		echo json_encode($this->data,JSON_PRETTY_PRINT);
 	}
 
