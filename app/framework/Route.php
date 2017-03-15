@@ -78,8 +78,7 @@ class Route
 				throw new Exception("The controller not found", 1);				
 			}
 		}else{
-			require_once '../app/controller/Error.php';
-			call_user_func_array(array(new Error,'home'),array());
+			return View::make('not-found');
 		}
 		
 	}

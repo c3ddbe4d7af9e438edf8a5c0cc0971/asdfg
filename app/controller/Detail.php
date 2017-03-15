@@ -76,32 +76,45 @@ class Detail{
 	}
 	public function user_details(){
 		$user=Users::auth();
-		if($user->type=='1'){
-			$data=Details::stu_details($user->id);
-		}else if($user->type=='2'){
-			$data=Details::tea_details($user->id);
-		}
+		$details['type']=$user->type;
+		$details['id']=$user->id;
+		$data=Details::user_details($details);
 		if(false!==$data){
 			return Json::make('1','User_detail is ',$data)->response();
 		}
 		return Json::make('0','Server Error')->withError(503)->response();
 	}
 
-	public function getUser(){
-		$details=Input::get(array('mobile','pendrive_num'));
+	public function getTeacher(){
+		$details=Input::get(array('mobile','pendrive_num','class','subject'));
 		$rules=array(
-			'mobile'=>'required|mobile',
-			'pendrive_num'=>'required',
+			'mobile'=>'mobile',
+			'class'=>'required',
+			'subject'=>'required',
 			);
 		if(!$validate=Validator::validate($details,$rules)){
 			return Json::make('0',Validator::error())->Witherror(400)->response();
 		}
-		$user=Details::getUser($details)[0]->id;
-		$data=Details::stu_details($user);
+		$data=Details::getTeacher($details);
 		if(false!==$data){
-			return Json::make('1','User_detail is ',$data)->response();
+			return Json::make('1','Available teacher is ',$data)->response();
 		}
 		return Json::make('0','Server Error')->withError(503)->response();
+	}
+	public function changeTeacherStatus(){
+		$details=Input::post(array('id','is_online'));
+		$rules=array(
+			'id'=>'required',
+			'is_online'=>'required',
+			);
+		if(!$validate=Validator::validate($details,$rules)){
+			return Json::make('0',Validator::error())->Witherror(400)->response();
+		}
+		if(false!==Details::changeTeacherStatus($details)){
+			return Json::make('1',$details['is_online']==1?' teacher is Busy now':' teacher is Free now')->response();
+		}
+		return Json::make('0','Server Error')->withError(503)->response();
+
 	}
 
 

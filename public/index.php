@@ -16,7 +16,8 @@ $route->post('/password/forget','account@send_temp_password');
 $route->post('/password/reset','account@set_new_password');
 
 $route->get('/details','Detail@user_details');
-$route->get('/student','Detail@getUser');
+$route->get('/teacher','Detail@getTeacher');
+$route->post('/teacher/status','Detail@changeTeacherStatus');
 
 $route->get('/test','Test@home');
 $route->run();
