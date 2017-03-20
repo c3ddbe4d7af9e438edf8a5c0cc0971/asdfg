@@ -6,7 +6,7 @@ class Users extends Model{
 	public static function auth(){
 		if(!self::$auth){
 			$details=Input::any('access_token');
-			$sql="SELECT * from users where access_token=:access_token AND DATEDIFF(curdate(),access_token_time)<".ACCESS_TOKEN_EXPIRY;
+			$sql="SELECT * from users where access_token=:access_token AND is_admin=1 AND DATEDIFF(curdate(),access_token_time)<".ACCESS_TOKEN_EXPIRY;
 			self::$auth=(new self)->first($sql,array('access_token'=>$details));
 		}
 		return self::$auth;

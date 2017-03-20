@@ -44,13 +44,32 @@ class Details extends model{
 		return (new self)->select($sql,array('email'=>$details['email']));
 	}
 	public static function user_details($details){
+		$param=array();
+		$param['type']=$details['type'];
 		$sql="SELECT a.*,if(group_concat(distinct c.code) is not null, group_concat(distinct c.code), '')  as class, if(group_concat(distinct pendrive_num) is not null, group_concat(distinct pendrive_num), '')  as pendrive_num FROM `users` a 
 			  left join user_classes b on b.user_id=a.id
 			  left join classes c on c.id=b.class_id
 			  left join user_pendrives d on d.user_id=a.id
 			  left join user_subjects e on e.user_id=a.id
-			  left join subjects f on f.id=e.subject_id WHERE  a.id=:id and a.type=:type group by a.id";
-		return(new self)->select($sql,array('id'=>$details['id'],'type'=>$details['type']));
+			  left join subjects f on f.id=e.subject_id WHERE 1 ";
+		if(!empty($details['id'])){
+			$sql.=" AND a.id=:id";
+			$param['id']=$details['id'];
+		}
+		if(!empty($details['mobile'])){
+			$sql.=" AND a.mobile=:mobile";
+			$param['mobile']=$details['mobile'];
+		}
+		if(!empty($details['email'])){
+			$sql.=" AND a.email=:email";
+			$param['email']=$details['email'];
+		}
+		if(!empty($details['pendrive_num'])){
+			$sql.=" AND d.pendrive_num=:pendrive_num";
+			$param['pendrive_num']=$details['pendrive_num'];
+		}
+		$sql.=" and a.type=:type group by a.id";
+		return(new self)->select($sql,$param);
 	}
 
 	public static function getTeacher($details){

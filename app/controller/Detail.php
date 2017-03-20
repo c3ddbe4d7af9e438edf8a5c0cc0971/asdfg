@@ -75,9 +75,13 @@ class Detail{
 		return Json::make('1','Email or password incorrect')->response();
 	}
 	public function user_details(){
-		$user=Users::auth();
-		$details['type']=$user->type;
-		$details['id']=$user->id;
+		$details=Input::get(array('mobile','email','type','id','pendrive_num'));
+		$rules=array(
+			'type'=>'required',
+			);
+		if(!$validate=Validator::validate($details,$rules)){
+			return Json::make('0',Validator::error())->Witherror(400)->response();
+		}
 		$data=Details::user_details($details);
 		if(false!==$data){
 			return Json::make('1','User_detail is ',$data)->response();
@@ -88,7 +92,6 @@ class Detail{
 	public function getTeacher(){
 		$details=Input::get(array('mobile','pendrive_num','class','subject'));
 		$rules=array(
-			'mobile'=>'mobile',
 			'class'=>'required',
 			'subject'=>'required',
 			);
